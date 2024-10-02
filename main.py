@@ -16,7 +16,7 @@ payloads = load_payloads('payloads.txt')
 
 # Common SQL syntax errors to detect vulnerabilities
 syntaxErrors = [
-    "mysqli_fetch_array", "SQL syntax"
+    "SQL syntax"
 ]
 
 def display_banner():
@@ -33,7 +33,7 @@ def display_banner():
 def SqlInjectionScanner(url):
     # Normalize URL: add 'http://' if missing and ensure it ends with a '/'
     url = url if url.startswith(('http://', 'https://')) else 'http://' + url
-    url = url.rstrip('/') + '/'
+    url = url.rstrip('/') + '/' if '?' not in url else url
 
     vulnerabilities_found = 0  # Initialize a counter for vulnerabilities
 
@@ -52,6 +52,7 @@ def SqlInjectionScanner(url):
                     break  # Stop scanning if the user chooses not to continue
 
             print(f"{ORANGE}[!] Scanning. Payload: {RESET}{YELLOW}{payload}{RESET}")
+            print(testUrl)
 
         except requests.exceptions.RequestException as e:
             print(f"{RED}Error: {RESET}{e}")
