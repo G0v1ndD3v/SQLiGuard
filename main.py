@@ -1,6 +1,7 @@
 import requests
 import argparse
 from payloads import load_payloads
+import urllib3
 
 # ANSI color codes for terminal output
 RED = '\033[91m'
@@ -19,8 +20,35 @@ syntaxErrors = [
     "SQL syntax"
 ]
 
+foundError = []
+
+def DirectoryFinder(url):
+    url = url if url.startswith(('http://', 'https://')) else 'http://' + url
+    filePath = "wordlist.txt"
+    with open(filePath, "r") as file:
+        directories = [line.strip() for line in file]
+
+    for dr in directories:
+        test_url = f"{url}/{dr}"
+        try:
+            response = requests.get(test_url, allow_redirects=True, timeout=5)
+            if response.status_code == 200:
+                print(f"Found: {test_url}")
+                foundError.append(test_url)
+                print(foundError)
+
+            else:
+                print(f"Not found: {test_url}")
+
+        except requests.exceptions.RequestException as e:
+            print(f"Error accessing {test_url}")
+            exit(1)
+
+        except urllib3.exceptions.InsecureRequestWarning:
+            print("error")
+            exit(1)
+
 def display_banner():
-    # Print a cool banner for the scanner B-)
     print(f"""
   ____   ___  _     _  ____                     _ 
  / ___| / _ \| |   (_)/ ___|_   _  __ _ _ __ __| |
@@ -52,7 +80,6 @@ def SqlInjectionScanner(url):
                     break  # Stop scanning if the user chooses not to continue
 
             print(f"{ORANGE}[!] Scanning. Payload: {RESET}{YELLOW}{payload}{RESET}")
-            print(testUrl)
 
         except requests.exceptions.RequestException as e:
             print(f"{RED}Error: {RESET}{e}")
