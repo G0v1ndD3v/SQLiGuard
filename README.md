@@ -17,10 +17,12 @@
 Ensure you have Python 3.7 installed and install the following dependencies:
 - `requests`
 - `argparse`
+- `urllib3`
+- `requests-futures`
 
 To install the required dependencies, run:
   ```bash
-  pip install requests argparse
+  pip install -r requirements.txt
   ```
 
 ### Project Setup
