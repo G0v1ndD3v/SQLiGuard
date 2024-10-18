@@ -1,6 +1,6 @@
+import time
 import requests
 import argparse
-from payloads import load_payloads
 import urllib3
 from requests_futures.sessions import FuturesSession
 
@@ -12,10 +12,14 @@ CYAN = '\033[36m'
 PURPLE = '\033[95m'
 RESET = '\033[0m'
 
+def load_payloads(file_path):
+    with open(file_path, "r") as file:
+        return file.read().splitlines()
+
 payloads = load_payloads('payloads.txt')
 
 syntaxErrors = [
-    "SQL syntax"
+    "SQL syntax", "mysqli_fetch_array"
 ]
 
 class VulnerabilityScanner:
@@ -29,7 +33,7 @@ class VulnerabilityScanner:
      / ___| / _ \| |   (_)/ ___|_   _  __ _ _ __ __| |
      \___ \| | | | |   | | |  _| | | |/ _` | '__/ _` |
       ___) | |_| | |___| | |_| | |_| | (_| | | | (_| |
-     |____/ \__\_\_____|_|\____|\__,_|\__,_|_|  \__,_|{GREEN}v1.1{RESET} 
+     |____/ \__\_\_____|_|\____|\__,_|\__,_|_|  \__,_|{GREEN}v1.0{RESET} 
                                                           
     """)
 
@@ -62,7 +66,9 @@ class DirectoryScanner(VulnerabilityScanner):
                 exit(1)
 
         if foundURL >= 1:
-            print(f"{RED}[*] It found {foundURL} different directories.\n{RESET}")
+            print(f"{GREEN}[*] It found {foundURL} different directories.\n{RESET}")
+            print(f"{ORANGE}[*] Attack is starting{RESET}")
+            time.sleep(3)
             return True
         else:
             print(f"{RED}[*] No URL Found\n{RESET}")
@@ -118,7 +124,6 @@ class DeepScan(DirectoryScanner, SqlInjectionScanner):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="SQL Injection Vulnerability Scanner and Directory Finder")
-
     parser.add_argument("-u", "--url", required=True, help="Target URL to scan")
     parser.add_argument("--deep-scan", action="store_true", help="Perform both directory and SQL injection scan")
     parser.add_argument("--sql-scan", action="store_true", help="Scan for SQL injection vulnerabilities")
